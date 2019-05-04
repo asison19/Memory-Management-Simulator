@@ -3,7 +3,7 @@ package memoryManagementSimulator;
 import java.util.Scanner;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-
+import java.io.File;
 public class Main {
 	
 	private static int memorySize;
@@ -16,7 +16,12 @@ public class Main {
 		getUserInput();
 		
 		if(memoryManagementPolicy == 1)
-			memoryManagementVSP();
+			try {
+				memoryManagementVSP();
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	}
 	
 	public static void getUserInput() {
@@ -36,16 +41,33 @@ public class Main {
 		
 	}
 	
-	public static void memoryManagementVSP() {
+	public static void memoryManagementVSP() throws FileNotFoundException {
 		VariableSizePartitioning VSP;// = new VariableSizePartitioning(memorySize, );
 		int processAmount;
-		FileReader fr;
-		try {
-			fr = new FileReader(fileName);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+		File inputFile = new File(fileName);
+		Scanner in = new Scanner(inputFile);
 		
+		//first line of the file should always be the number of processes
+		processAmount = in.nextInt();
+		
+		VSP = new VariableSizePartitioning(memorySize, processAmount, fitAlgorithm);
+		
+		/*
+		 * Next numbers should be a set
+		 * First is the ID
+		 * Second is the arrival time, and completion time
+		 * Last is the page amount and the memory amount of each page
+		 * 		since this is VSP page amount should be 1
+		 * This continues on for however many processes there are
+		 */
+		for(int i = 0; i < processAmount; i++) {
+			int id = in.nextInt();
+			int arrivalTime = in.nextInt();
+			int endTime = in.nextInt();
+			int pageAmount = in.nextInt(); // this should be 1
+			int spaceAmount = in.nextInt();
+			
+			VSP.addProcess(new Process(id, arrivalTime, endTime, pageAmount, spaceAmount));
+		}
 	}
-
 }

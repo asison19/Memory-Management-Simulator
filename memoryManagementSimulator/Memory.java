@@ -5,17 +5,24 @@ public abstract class Memory {
 	
 	/* 
 	 * boolean array to keep track of which "bytes" are occupied by a process
-	 * false meaning the space is taken
-	 * true meaning the space is not taken
+	 * true meaning the space is taken
+	 * false meaning the space is not taken
 	 */
 	private boolean[] memory;
 	
 	/*
-	 * contains the processes in memory
+	 * contains the processes in memory that are running
 	 */
-	private ArrayList<Process> lookupTable = new ArrayList<>();
-	private int processAmount;
-	private int finishedProcessAmount;
+	protected ArrayList<Process> lookupTable = new ArrayList<>();
+	
+	/*
+	 * contains the processes that are waiting to be given space to run
+	 */
+	protected ArrayList<Process> waitingProcesses = new ArrayList<>();
+	
+	protected int processAmount;
+	protected int finishedProcessAmount;
+	//private int time = 0; // "clock" of the time the process takes in memory
 	
 	public Memory(int memorySize, int processAmount){
 		memory = new boolean[memorySize];
@@ -30,31 +37,19 @@ public abstract class Memory {
 	// add data from start to last
 	public void addData(int start, int last) {
 		for(int i = start; i < last; i++)
-			memory[i] = false;
+			memory[i] = true;
 	}
 	
-	public void addProcess(Process proc) {
-		lookupTable.add(proc);
-	}
-	
-	// TODO pass in as index?
-	public boolean removeProcess(Process proc, int time) {
-		lookupTable.remove(proc);
-		
-		// output the process completing
-		System.out.println("Time: " + time + "\nProcess " + proc.getId() + 
-				" has completed");
-		
-		// check if we're finished
-		if(finishedProcessAmount == processAmount)
-			return true;
-		else
-			return false;
-		
-	}
 	
 	public void outputMemoryMap() {
 		
 	}
+	
+	public int getProcessAmount() {
+		return processAmount;
+	}
+	
+	public abstract void addProcess(Process proc);
+	public abstract boolean removeProcess(Process proc, int time);
 	
 }
