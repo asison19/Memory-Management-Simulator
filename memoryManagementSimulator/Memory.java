@@ -8,7 +8,7 @@ public abstract class Memory {
 	 * true meaning the space is taken
 	 * false meaning the space is not taken
 	 */
-	private boolean[] memory;
+	protected boolean[] memory;
 	
 	/*
 	 * contains the processes in memory that are running
@@ -42,7 +42,13 @@ public abstract class Memory {
 	}
 	
 	public void outputMemoryMap() {
-		
+		System.out.println("Memory Map:");
+		for(Process proc: lookupTable) {
+			for(int i = 0;i < proc.getPageAmount(); i++) {
+				System.out.println("\t" + proc.getPageAt(i).startIndex + "-"
+			+ proc.getPageAt(i).endIndex + ": Process " + proc.getId());
+			}
+		}
 	}
 	
 	public int getProcessAmount() {

@@ -65,7 +65,8 @@ public class Main {
 			int arrivalTime = in.nextInt();
 			int endTime = in.nextInt();
 			int pageAmount = in.nextInt(); // this should be 1
-			int spaceAmount = in.nextInt();
+			int[] spaceAmount = new int[pageAmount];
+			spaceAmount[0] = in.nextInt();
 			
 			VSP.addProcess(new Process(id, arrivalTime, endTime, pageAmount, spaceAmount));
 		}

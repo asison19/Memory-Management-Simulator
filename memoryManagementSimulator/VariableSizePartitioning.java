@@ -40,24 +40,43 @@ public class VariableSizePartitioning extends Memory{
 		
 	}
 	
-	//false if no spot available
-	private boolean firstFit() {
-		return true;
+	/*
+	 * Searches from the beginning of memory to the end for any available spots
+	 * Memory must be contiguous
+	 * False if no spot available
+	 */
+	private boolean firstFit(Process proc) {
+		int freeSpace = 0;
+		for(int i = 0; i < memory.length; i++) {
+			// while we find a contiguous set of false booleans find out if it's the right fit
+			int start = i;
+			if(!memory[i]) {
+				freeSpace++;
+				// if the spot is large enough add it into memory
+				if(freeSpace == proc.getSizeOfPageAt(0)) {
+					proc.setIndexes(proc.getSizeOfPageAt(0) - i, i);
+					addData(proc.getSizeOfPageAt(0) - i, i);
+					return true;
+				}
+			}
+			freeSpace = 0;
+		}
+		return false; // if we get here, there is no viable location for the process
 	}
 	
-	private void bestFit() {
-		
+	private boolean bestFit(Process proc) {
+		return true; // TODO
 	}
 	
-	private void worstFit() {
-		
+	private boolean worstFit(Process proc) {
+		return true; // TODO
 	}
 	
 	private void startSimulation() {
 		int time = 0;
 		Predicate<Process> condition = proc -> proc.isComplete(); // condition for when to remove processes from lookupTable
 		
-		//continue running until all processes have started and completed
+		// continue running until all processes have started and completed
 		while(!waitingProcesses.isEmpty() || !lookupTable.isEmpty()) {
 			
 			/* check waiting processes if they can run
@@ -69,9 +88,10 @@ public class VariableSizePartitioning extends Memory{
 					//attempts to add into memory
 					if(fitAlgorithm == 1) {
 						//if true, we fitted process into memory and now will add to lookupTable and remove from wait-list
-						if(firstFit()) {
+						if(firstFit(waitingProcesses.get(i))) {
 							lookupTable.add(waitingProcesses.get(i));
 							waitingProcesses.remove(i);
+							outputMemoryMap();
 						}
 					}
 				}
@@ -106,7 +126,7 @@ Process 3 has completed at time 200.
 Process 5 has completed at time 200.
 Process 9 has completed at time 1200.
 Process 7 has completed at time 2000.
-Process 2 has completed at time 2001.
+Process 2 has completed at time 2001. // TODO not sure why this is happening...
 Process 6 has completed at time 2001.
 Process 4 has completed at time 2002.
 Process 8 has completed at time 2100.
