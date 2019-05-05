@@ -26,6 +26,7 @@ public abstract class Memory {
 	
 	public Memory(int memorySize, int processAmount){
 		memory = new boolean[memorySize];
+		this.processAmount = processAmount;
 	}
 	
 	// remove data from start to last
@@ -39,7 +40,6 @@ public abstract class Memory {
 		for(int i = start; i < last; i++)
 			memory[i] = true;
 	}
-	
 	
 	public void outputMemoryMap() {
 		
