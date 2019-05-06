@@ -47,16 +47,20 @@ public class VariableSizePartitioning extends Memory{
 	 */
 	private boolean firstFit(Process proc) {
 		int freeSpace = 0;
+		// while we find a contiguous set of false booleans find out if it's the right fit
 		for(int i = 0; i < memory.length; i++) {
-			// while we find a contiguous set of false booleans find out if it's the right fit
-			int start = i;
+			// if we find one free space, continue looking to see if it's contiguous
 			if(!memory[i]) {
-				freeSpace++;
-				// if the spot is large enough add it into memory
-				if(freeSpace == proc.getSizeOfPageAt(0)) {
-					proc.setIndexes(proc.getSizeOfPageAt(0) - i, i);
-					addData(proc.getSizeOfPageAt(0) - i, i);
-					return true;
+				while(i<memory.length && !memory[i]) {
+					freeSpace++;
+					i++;
+					
+					// if the space is enough, then put it in and return true
+					if(freeSpace == proc.getSizeOfPageAt(0)) {
+						proc.setIndexes(i - proc.getSizeOfPageAt(0), i);
+						addData(i - proc.getSizeOfPageAt(0), i);
+						return true;
+					}
 				}
 			}
 			freeSpace = 0;
@@ -102,6 +106,7 @@ public class VariableSizePartitioning extends Memory{
 				// check if any processes are complete
 				if(lookupTable.get(i).isComplete()) {
 					System.out.println("Process " + lookupTable.get(i).getId() + " has completed at time " + time + ".");
+					removeProcess(i);
 					outputMemoryMap();
 				}
 			}
@@ -115,19 +120,3 @@ public class VariableSizePartitioning extends Memory{
 		}
 	}
 }
-/* Example Output:
-Memory Size: 2000
-Memory management policy (1- VSP, 2- PAG, 3- SEG): 1
-Fit algorithm (1- first-fit, 2- best-fit, 3- worst-fit): 1
-File name of the Input: D:\CS4310\Program3\vspIn.dat
-Starting Simulation.
-Process 1 has completed at time 200.
-Process 3 has completed at time 200.
-Process 5 has completed at time 200.
-Process 9 has completed at time 1200.
-Process 7 has completed at time 2000.
-Process 2 has completed at time 2001. // TODO not sure why this is happening...
-Process 6 has completed at time 2001.
-Process 4 has completed at time 2002.
-Process 8 has completed at time 2100.
- */

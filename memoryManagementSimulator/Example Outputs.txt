@@ -1,0 +1,109 @@
+**********************5/5/2019 8:10 PM**********************
+Memory Size: 2000
+Memory management policy (1- VSP, 2- PAG, 3- SEG): 1
+Fit algorithm (1- first-fit, 2- best-fit, 3- worst-fit): 1
+File name of the Input: D:\CS4310\Program3\vspIn.dat
+Starting Simulation.
+Memory Map:
+	0-400: Process 1
+Memory Map:
+	0-400: Process 1
+	400-700: Process 3
+Memory Map:
+	0-400: Process 1
+	400-700: Process 3
+	700-1200: Process 5
+Memory Map:
+	0-400: Process 1
+	400-700: Process 3
+	700-1200: Process 5
+	1200-1400: Process 2
+Memory Map:
+	0-400: Process 1
+	400-700: Process 3
+	700-1200: Process 5
+	1200-1400: Process 2
+	1400-1800: Process 6
+Memory Map:
+	0-400: Process 1
+	400-700: Process 3
+	700-1200: Process 5
+	1200-1400: Process 2
+	1400-1800: Process 6
+	1800-1900: Process 4
+Process 1 has completed at time 200.
+Memory Map:
+	0-400: Process 1
+	400-700: Process 3
+	700-1200: Process 5
+	1200-1400: Process 2
+	1400-1800: Process 6
+	1800-1900: Process 4
+Process 3 has completed at time 200.
+Memory Map:
+	0-400: Process 1
+	400-700: Process 3
+	700-1200: Process 5
+	1200-1400: Process 2
+	1400-1800: Process 6
+	1800-1900: Process 4
+Process 5 has completed at time 200.
+Memory Map:
+	0-400: Process 1
+	400-700: Process 3
+	700-1200: Process 5
+	1200-1400: Process 2
+	1400-1800: Process 6
+	1800-1900: Process 4
+Memory Map:
+	1200-1400: Process 2
+	1400-1800: Process 6
+	1800-1900: Process 4
+	0-300: Process 7
+Memory Map:
+	1200-1400: Process 2
+	1400-1800: Process 6
+	1800-1900: Process 4
+	0-300: Process 7
+	300-800: Process 8
+Memory Map:
+	1200-1400: Process 2
+	1400-1800: Process 6
+	1800-1900: Process 4
+	0-300: Process 7
+	300-800: Process 8
+	800-1200: Process 9
+Process 9 has completed at time 1200.
+Memory Map:
+	1200-1400: Process 2
+	1400-1800: Process 6
+	1800-1900: Process 4
+	0-300: Process 7
+	300-800: Process 8
+	800-1200: Process 9
+Process 7 has completed at time 2000.
+Memory Map:
+	1200-1400: Process 2
+	1400-1800: Process 6
+	1800-1900: Process 4
+	0-300: Process 7
+	300-800: Process 8
+Process 2 has completed at time 2001.
+Memory Map:
+	1200-1400: Process 2
+	1400-1800: Process 6
+	1800-1900: Process 4
+	300-800: Process 8
+Process 6 has completed at time 2001.
+Memory Map:
+	1200-1400: Process 2
+	1400-1800: Process 6
+	1800-1900: Process 4
+	300-800: Process 8
+Process 4 has completed at time 2002.
+Memory Map:
+	1800-1900: Process 4
+	300-800: Process 8
+Process 8 has completed at time 2100.
+Memory Map:
+	300-800: Process 8

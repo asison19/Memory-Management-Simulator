@@ -29,14 +29,26 @@ public abstract class Memory {
 		this.processAmount = processAmount;
 	}
 	
+	// remove all data of the process from memory
+	protected void removeProcess(int index) {
+		// for however many pages there are in the process
+		for(int i = 0 ; i < lookupTable.get(index).getPageAmount(); i++) {
+			// for however long that page is
+			for(int j = 0; j < lookupTable.get(index).getPageAt(i).spaceAmount; j++) {
+				removeData(lookupTable.get(index).getPageAt(i).startIndex, 
+						lookupTable.get(index).getPageAt(i).endIndex);
+			}
+		}
+	}
+	
 	// remove data from start to last
-	public void removeData(int start, int last) {
+	protected void removeData(int start, int last) {
 		for(int i = start; i < last; i++)
 			memory[i] = false;
 	}
 	
 	// add data from start to last
-	public void addData(int start, int last) {
+	protected void addData(int start, int last) {
 		for(int i = start; i < last; i++)
 			memory[i] = true;
 	}
