@@ -50,18 +50,16 @@ public class VariableSizePartitioning extends Memory{
 		// while we find a contiguous set of false booleans find out if it's the right fit
 		for(int i = 0; i < memory.length; i++) {
 			// if we find one free space, continue looking to see if it's contiguous
-			if(!memory[i]) {
-				while(i<memory.length && !memory[i]) {
-					freeSpace++;
-					i++;
-					
-					// if the space is enough, then put it in and return true
-					if(freeSpace == proc.getSizeOfPageAt(0)) {
-						proc.setIndexes(i - proc.getSizeOfPageAt(0), i);
-						addData(i - proc.getSizeOfPageAt(0), i);
-						return true;
-					}
+			int start = i;
+			while(i < memory.length && !memory[i]) {
+				freeSpace++;
+				// if the space is enough, then put it in and return true
+				if(freeSpace == proc.getSizeOfPageAt(0)) {
+					proc.setIndexes(start, i);
+					addData(start, i);
+					return true;
 				}
+				i++;
 			}
 			freeSpace = 0;
 		}
@@ -88,10 +86,11 @@ public class VariableSizePartitioning extends Memory{
 			 * if no space, then leave in wait-list
 			 */
 			for(int i = 0; i < waitingProcesses.size(); i++) {
+				// if process start time has already passed
 				if (time >= waitingProcesses.get(i).getStartTime()) {
-					//attempts to add into memory
+					// attempts to add into memory
 					if(fitAlgorithm == 1) {
-						//if true, we fitted process into memory and now will add to lookupTable and remove from wait-list
+						// if true, we fit process into memory and now will add to lookupTable and remove from wait-list
 						if(firstFit(waitingProcesses.get(i))) {
 							lookupTable.add(waitingProcesses.get(i));
 							waitingProcesses.remove(i);
@@ -120,3 +119,6 @@ public class VariableSizePartitioning extends Memory{
 		}
 	}
 }
+/*
+ * TODO: Process 8 never gets in
+ */

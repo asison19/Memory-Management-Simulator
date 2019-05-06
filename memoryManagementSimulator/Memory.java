@@ -43,13 +43,13 @@ public abstract class Memory {
 	
 	// remove data from start to last
 	protected void removeData(int start, int last) {
-		for(int i = start; i < last; i++)
+		for(int i = start; i <= last; i++)
 			memory[i] = false;
 	}
 	
 	// add data from start to last
 	protected void addData(int start, int last) {
-		for(int i = start; i < last; i++)
+		for(int i = start; i <= last; i++)
 			memory[i] = true;
 	}
 	
