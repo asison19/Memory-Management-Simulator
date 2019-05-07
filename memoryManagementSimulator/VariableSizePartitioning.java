@@ -26,6 +26,8 @@ public class VariableSizePartitioning extends Memory{
 		}
 	}
 	
+	/*
+	 * TODO delete this?
 	public boolean removeProcess(Process proc, int time) {
 		lookupTable.remove(proc);
 		
@@ -39,6 +41,7 @@ public class VariableSizePartitioning extends Memory{
 			return false;
 		
 	}
+	*/
 	
 	/*
 	 * Searches from the beginning of memory to the end for any available spots
@@ -78,45 +81,63 @@ public class VariableSizePartitioning extends Memory{
 		int time = 0;
 		Predicate<Process> condition = proc -> proc.isComplete(); // condition for when to remove processes from lookupTable
 		
+		// check if any processes have arrived
+		for(int i = 0; i < waitingProcesses.size(); i++) {
+			if(time == waitingProcesses.get(i).getStartTime())
+				System.out.println("Process " + waitingProcesses.get(i).getId() + " has arrived.");
+		}
+		
 		// continue running until all processes have started and completed
 		while(!waitingProcesses.isEmpty() || !lookupTable.isEmpty()) {
 			
+			// check for complete processes 
+			for(int i = 0; i < lookupTable.size(); i++){
+				// check if any processes are complete
+				if(lookupTable.get(i).isComplete()) {
+					removeProcess(i);
+					System.out.println("Process " + lookupTable.get(i).getId() + " has completed at time " + time + ".");
+				}
+			}
+			
+			// remove from list if process is complete
+			if(lookupTable.removeIf(condition))
+				outputMemoryMap();
+				
 			/* check waiting processes if they can run
 			 * if they can run, remove from wait-list and add to lookupTable if there's space in memory
 			 * if no space, then leave in wait-list
 			 */
-			for(int i = 0; i < waitingProcesses.size(); i++) {
-				// if process start time has already passed
-				if (time >= waitingProcesses.get(i).getStartTime()) {
+			for(Process proc : waitingProcesses) {
+
+				// check if process start time has already passed
+				if (time >= proc.getStartTime()) {
+					
 					// attempts to add into memory
 					if(fitAlgorithm == 1) {
+						
 						// if true, we fit process into memory and now will add to lookupTable and remove from wait-list
-						if(firstFit(waitingProcesses.get(i))) {
-							lookupTable.add(waitingProcesses.get(i));
-							waitingProcesses.remove(i);
+						if(firstFit(proc)) {
+							System.out.println("Process " + proc.getId() + " is starting.");
+							lookupTable.add(proc);
+							//waitingProcesses.remove(proc);
+							
 							outputMemoryMap();
 						}
 					}
 				}
 			}
 			
-			// check for complete processes 
-			for(int i = 0; i < lookupTable.size(); i++){
-				// check if any processes are complete
-				if(lookupTable.get(i).isComplete()) {
-					System.out.println("Process " + lookupTable.get(i).getId() + " has completed at time " + time + ".");
-					removeProcess(i);
-					outputMemoryMap();
-				}
-			}
-			lookupTable.removeIf(condition); //remove from list if process is complete
+			// remove any processes that have been added to the running list, lookupTable
+			for(Process proc : lookupTable)
+				waitingProcesses.remove(proc);
 			
 			// increment time for the process if it is not complete
 			for(int i = 0; i < lookupTable.size(); i++) {
 				lookupTable.get(i).incrementTimeAlive(); 
 			}
 			time++;
-		}
+		} // end while loop
+		System.out.println("Simulation ended.");
 	}
 }
 /*
