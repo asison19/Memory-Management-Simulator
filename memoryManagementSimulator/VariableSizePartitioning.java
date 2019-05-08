@@ -1,4 +1,7 @@
 package memoryManagementSimulator;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.function.Predicate;
 
 public class VariableSizePartitioning extends Memory{
@@ -57,7 +60,7 @@ public class VariableSizePartitioning extends Memory{
 			while(i < memory.length && !memory[i]) {
 				freeSpace++;
 				// if the space is enough, then put it in and return true
-				if(freeSpace == proc.getSizeOfPageAt(0)) {
+				if(freeSpace == proc.getSizeOfPageAt(0)) { // because this is VSP, there is only 1 "page"
 					proc.setIndexes(start, i);
 					addData(start, i);
 					return true;
@@ -69,8 +72,45 @@ public class VariableSizePartitioning extends Memory{
 		return false; // if we get here, there is no viable location for the process
 	}
 	
+	// similar to looking for holes in outputMemoryMap
+	// looks for smallest contiguous memory that can fit the process
 	private boolean bestFit(Process proc) {
-		return true; // TODO
+		ArrayList<Hole> holes = new ArrayList<>();
+		
+		// Search for the holes and add them all into a list
+		// TODO optimize. redundant to continue searching if hole is larger than another hole that itself
+		// is larger than the space needed.
+		for(int i = 0; i < memory.length; i++) {
+			int start = i;
+			int end = i;
+			// if we find a empty space, look to see how much in a row
+			while(i < memory.length && !memory[i]) { // TODO it's getting stuck here
+				end++;
+				i++;
+				
+				if (end < memory.length && memory[end]) {
+					holes.add(new Hole(start, end));
+				}
+			}
+		}
+		
+		Collections.sort(holes); // sort in ascending order of the totalSize
+		
+		// prune small holes that can't fit the process 
+		//Predicate<Hole> condition = Hole -> Hole.smallerThan(proc.getPageAt(0).spaceAmount);
+		//holes.removeIf(condition); 
+		
+		// search the holes from smallest to largest
+		for(Hole hole : holes) {
+			if(proc.getPageAt(0).spaceAmount <= hole.getTotalSize()) {
+				proc.setIndexes(hole.getStartIndex(), hole.getEndIndex());
+				addData(hole.getStartIndex(), hole.getEndIndex());
+				return true; // end if we've found  a spot it can fit in
+			}
+		}
+		
+		//holes.removeAll(holes); // unnecessary here
+		return false; // TODO
 	}
 	
 	private boolean worstFit(Process proc) {
@@ -110,17 +150,29 @@ public class VariableSizePartitioning extends Memory{
 			for(Process proc : waitingProcesses) {
 
 				// check if process start time has already passed
-				if (time >= proc.getStartTime()) {
+				if(time >= proc.getStartTime()) {
 					
 					// attempts to add into memory
-					if(fitAlgorithm == 1) {
-						
+					// first fit
+					if(fitAlgorithm == 1){
 						// if true, we fit process into memory and now will add to lookupTable and remove from wait-list
 						if(firstFit(proc)) {
 							System.out.println("Process " + proc.getId() + " is starting.");
-							lookupTable.add(proc);
-							//waitingProcesses.remove(proc);
-							
+							lookupTable.add(proc);		
+							outputMemoryMap();
+						}
+						// best fit
+					} else if(fitAlgorithm == 2) {
+						if(bestFit(proc)) {
+							System.out.println("Process " + proc.getId() + " is starting.");
+							lookupTable.add(proc);		
+							outputMemoryMap();
+						}
+						// worst fit
+					} else if(fitAlgorithm == 3) {
+						if(worstFit(proc)) {
+							System.out.println("Process " + proc.getId() + " is starting.");
+							lookupTable.add(proc);		
 							outputMemoryMap();
 						}
 					}
