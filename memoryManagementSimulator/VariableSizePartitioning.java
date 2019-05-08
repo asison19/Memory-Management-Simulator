@@ -104,9 +104,9 @@ public class VariableSizePartitioning extends Memory{
 		
 		// search the holes from smallest to largest
 		for(Hole hole : holes) {
-			if(proc.getPageAt(0).spaceAmount <= hole.getTotalSize()) { // TODO problem of improper memory add is here
-				proc.setIndexes(hole.getStartIndex(), proc.getPageAt(0).spaceAmount - 1);
-				addData(hole.getStartIndex(), proc.getPageAt(0).spaceAmount - 1);
+			if(proc.getPageAt(0).spaceAmount <= hole.getTotalSize()) { 
+				proc.setIndexes(hole.getStartIndex(), hole.getStartIndex() + proc.getPageAt(0).spaceAmount - 1);
+				addData(hole.getStartIndex(), hole.getStartIndex() + proc.getPageAt(0).spaceAmount - 1);
 				return true; // end if we've found  a spot it can fit in
 			}
 		}
@@ -119,14 +119,14 @@ public class VariableSizePartitioning extends Memory{
 		int time = 0;
 		Predicate<Process> condition = proc -> proc.isComplete(); // condition for when to remove processes from lookupTable
 		
-		// check if any processes have arrived TODO: Processes past time 0 don't say they've arrived
-		for(int i = 0; i < waitingProcesses.size(); i++) {
-			if(time == waitingProcesses.get(i).getStartTime())
-				System.out.println("Process " + waitingProcesses.get(i).getId() + " has arrived.");
-		}
-		
 		// continue running until all processes have started and completed
 		while(!waitingProcesses.isEmpty() || !lookupTable.isEmpty()) {
+			
+			// check if any processes have arrived TODO: Processes past time 0 don't say they've arrived
+			for(int i = 0; i < waitingProcesses.size(); i++) {
+				if(time == waitingProcesses.get(i).getStartTime())
+					System.out.println("Process " + waitingProcesses.get(i).getId() + " has arrived.");
+			}
 			
 			// check for complete processes 
 			for(int i = 0; i < lookupTable.size(); i++){
@@ -155,25 +155,19 @@ public class VariableSizePartitioning extends Memory{
 					if(fitAlgorithm == 1){
 						// if true, we fit process into memory and now will add to lookupTable and remove from wait-list
 						if(firstFit(proc)) {
-							System.out.println("Process " + proc.getId() + " is starting.");
-							lookupTable.add(proc);		
-							outputMemoryMap();
+							startProcess(proc, time);
 						}
 						
 						// best fit
 					} else if(fitAlgorithm == 2) {
 						if(fitBW(proc, true)) {
-							System.out.println("Process " + proc.getId() + " is starting.");
-							lookupTable.add(proc);		
-							outputMemoryMap();
+							startProcess(proc, time);
 						}
 						
 						// worst fit
 					} else if(fitAlgorithm == 3) {
 						if(fitBW(proc, false)) {
-							System.out.println("Process " + proc.getId() + " is starting.");
-							lookupTable.add(proc);		
-							outputMemoryMap();
+							startProcess(proc, time);
 						}
 					}
 				}
@@ -190,6 +184,12 @@ public class VariableSizePartitioning extends Memory{
 			time++;
 		} // end while loop
 		System.out.println("Simulation ended.");
+	}
+	
+	private void startProcess(Process proc, int time) {
+		System.out.println("Starting Process " + proc.getId() + " at time "+ time +".");
+		lookupTable.add(proc);		
+		outputMemoryMap();
 	}
 }
 /*
