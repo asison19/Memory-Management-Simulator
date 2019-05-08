@@ -72,20 +72,17 @@ public abstract class Memory {
 		}
 		
 		// Output the amount of free space, the holes. Does not include internal fragmentation
-		// TODO output hole from anywhere before the end of the length, to the end of the length
 		for(int i = 0; i < memory.length; i++) {
 			int start = i;
-			int end = i;
-			// if we find a empty space, look to see how much in a row
+			
+			// if we find a empty space, look to see how much is in a row
 			while(i < memory.length && !memory[i]) {
-				end++;
 				i++;
-				if(end < memory.length && memory[end]) {
-					//holes.add(new Hole(start, end));
-					System.out.println("\t" + start + "-" + end + ": Hole.");
+				if(i == (memory.length - 1) || (i < memory.length && memory[i])) {
+					//holes.add(new Hole(start, i));
+					System.out.println("\t" + start + "-" + i + ": Hole.");
 				}
 			}
-			end = i;
 		}
 		//holes.removeAll(holes);
 		System.out.println();

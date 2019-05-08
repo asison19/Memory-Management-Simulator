@@ -73,8 +73,9 @@ public class VariableSizePartitioning extends Memory{
 	}
 	
 	// similar to looking for holes in outputMemoryMap
-	// looks for smallest contiguous memory that can fit the process
-	private boolean bestFit(Process proc) {
+	// looks for contiguous memory that can fit the process
+	// @param isBest, if true - best fit, if false - worst fit
+	private boolean fitBW(Process proc, boolean isBest)  {
 		ArrayList<Hole> holes = new ArrayList<>();
 		
 		// Search for the holes and add them all into a list
@@ -82,19 +83,20 @@ public class VariableSizePartitioning extends Memory{
 		// is larger than the space needed.
 		for(int i = 0; i < memory.length; i++) {
 			int start = i;
-			int end = i;
+			
 			// if we find a empty space, look to see how much in a row
-			while(i < memory.length && !memory[i]) { // TODO it's getting stuck here
-				end++;
+			while(i < memory.length && !memory[i]) { 
 				i++;
-				
-				if (end < memory.length && memory[end]) {
-					holes.add(new Hole(start, end));
+				if (i == (memory.length - 1) || (i < memory.length && memory[i])) {
+					holes.add(new Hole(start, i));
 				}
 			}
 		}
 		
-		Collections.sort(holes); // sort in ascending order of the totalSize
+		if(isBest)
+			Collections.sort(holes); // sort in ascending order of the totalSize
+		else
+			Collections.reverse(holes); // sort in descending order of the totalSize
 		
 		// prune small holes that can't fit the process 
 		//Predicate<Hole> condition = Hole -> Hole.smallerThan(proc.getPageAt(0).spaceAmount);
@@ -102,26 +104,22 @@ public class VariableSizePartitioning extends Memory{
 		
 		// search the holes from smallest to largest
 		for(Hole hole : holes) {
-			if(proc.getPageAt(0).spaceAmount <= hole.getTotalSize()) {
-				proc.setIndexes(hole.getStartIndex(), hole.getEndIndex());
-				addData(hole.getStartIndex(), hole.getEndIndex());
+			if(proc.getPageAt(0).spaceAmount <= hole.getTotalSize()) { // TODO problem of improper memory add is here
+				proc.setIndexes(hole.getStartIndex(), proc.getPageAt(0).spaceAmount - 1);
+				addData(hole.getStartIndex(), proc.getPageAt(0).spaceAmount - 1);
 				return true; // end if we've found  a spot it can fit in
 			}
 		}
 		
 		//holes.removeAll(holes); // unnecessary here
-		return false; // TODO
-	}
-	
-	private boolean worstFit(Process proc) {
-		return true; // TODO
+		return false; 
 	}
 	
 	private void startSimulation() {
 		int time = 0;
 		Predicate<Process> condition = proc -> proc.isComplete(); // condition for when to remove processes from lookupTable
 		
-		// check if any processes have arrived
+		// check if any processes have arrived TODO: Processes past time 0 don't say they've arrived
 		for(int i = 0; i < waitingProcesses.size(); i++) {
 			if(time == waitingProcesses.get(i).getStartTime())
 				System.out.println("Process " + waitingProcesses.get(i).getId() + " has arrived.");
@@ -161,16 +159,18 @@ public class VariableSizePartitioning extends Memory{
 							lookupTable.add(proc);		
 							outputMemoryMap();
 						}
+						
 						// best fit
 					} else if(fitAlgorithm == 2) {
-						if(bestFit(proc)) {
+						if(fitBW(proc, true)) {
 							System.out.println("Process " + proc.getId() + " is starting.");
 							lookupTable.add(proc);		
 							outputMemoryMap();
 						}
+						
 						// worst fit
 					} else if(fitAlgorithm == 3) {
-						if(worstFit(proc)) {
+						if(fitBW(proc, false)) {
 							System.out.println("Process " + proc.getId() + " is starting.");
 							lookupTable.add(proc);		
 							outputMemoryMap();
@@ -193,5 +193,5 @@ public class VariableSizePartitioning extends Memory{
 	}
 }
 /*
- * TODO: Process 8 never gets in
+ * TODO: Best/Worst fit aren't working properly
  */
