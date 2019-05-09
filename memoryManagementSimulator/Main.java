@@ -15,9 +15,14 @@ public class Main {
 	public static void main(String[] args) {
 		getUserInput();
 		
-		if(memoryManagementPolicy == 1)
+		
 			try {
-				memoryManagementVSP();
+				if(memoryManagementPolicy == 1)
+					memoryManagementVSP();
+				else if(memoryManagementPolicy == 2)
+					memoryManagementVSP();
+				else if(memoryManagementPolicy == 3)
+					memoryManagementSegmentation();
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -69,6 +74,39 @@ public class Main {
 			spaceAmount[0] = in.nextInt();
 			
 			VSP.addProcess(new Process(id, arrivalTime, endTime, pageAmount, spaceAmount));
+		}
+	}
+	
+	public static void memoryManagementSegmentation() throws FileNotFoundException {
+		Segmentation seg; 
+		int processAmount;
+		File inputFile = new File(fileName);
+		Scanner in = new Scanner(inputFile);
+		
+		//first line of the file should always be the number of processes
+		processAmount = in.nextInt();
+		
+		seg = new Segmentation(memorySize, processAmount, fitAlgorithm);
+		
+		/*
+		 * Next numbers should be a set
+		 * First is the ID
+		 * Second is the arrival time, and completion time
+		 * Last is the page amount and the memory amount of each page
+		 * 		since this is VSP page amount should be 1
+		 * This continues on for however many processes there are
+		 */
+		for(int i = 0; i < processAmount; i++) {
+			int id = in.nextInt();
+			int arrivalTime = in.nextInt();
+			int endTime = in.nextInt();
+			int pageAmount = in.nextInt(); // this should be greater than 1
+			int[] spaceAmount = new int[pageAmount];
+			for(int j = 0; j < pageAmount; j++) {
+				spaceAmount[j] = in.nextInt();
+			}
+			
+			seg.addProcess(new Process(id, arrivalTime, endTime, pageAmount, spaceAmount));
 		}
 	}
 }

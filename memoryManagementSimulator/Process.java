@@ -65,4 +65,12 @@ public class Process {
 		return (timeAlive >= endTime);
 	}
 	
+	public Page[] getPages() {
+		return pages;
+	}
+	
+	public void resetNextPage() {
+		nextPage = 0;
+	}
+	
 }

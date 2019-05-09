@@ -38,12 +38,22 @@ public abstract class Memory {
 	protected void removeProcess(int index) {
 		// for however many pages there are in the process
 		for(int i = 0 ; i < lookupTable.get(index).getPageAmount(); i++) {
-			// for however long that page is
-			for(int j = 0; j < lookupTable.get(index).getPageAt(i).spaceAmount; j++) {
-				removeData(lookupTable.get(index).getPageAt(i).startIndex, 
-						lookupTable.get(index).getPageAt(i).endIndex);
-			}
+			// for however long that page is, remove the data
+			removeData(lookupTable.get(index).getPageAt(i).startIndex, 
+					lookupTable.get(index).getPageAt(i).endIndex);
+			
 		}
+		// proc.resetNextPage(); // Not used in VSP,
+	}
+	protected void removeProcess(Process proc) {
+		// for however many pages there are in the process
+		for(int i = 0 ; i < proc.getPageAmount(); i++) {
+			// for however long that page is, remove the data
+			// TODO can cause unrealistic cases for indexes not yet set if a process wants to go to 
+			// index 0 with total space of 1
+			removeData(proc.getPageAt(i).startIndex, proc.getPageAt(i).endIndex);
+		}
+		
 	}
 	
 	// remove data from start to last

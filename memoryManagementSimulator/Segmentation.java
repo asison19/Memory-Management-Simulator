@@ -1,18 +1,23 @@
+/*
+ * Segmentation Class
+ * Similar to Variable Size Partitioning, but
+ * Processes can have non-contiguous memory of predefined sets
+ */
+
 package memoryManagementSimulator;
+
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.function.Predicate;
 
-public class VariableSizePartitioning extends Memory{
-
-	//private int spaceAmount;
+public class Segmentation extends Memory{ 
+	
 	private int fitAlgorithm;
-	public VariableSizePartitioning(int memorySize, int processAmount, int fitAlgorithm) {
+	public Segmentation(int memorySize, int processAmount, int fitAlgorithm) {
 		super(memorySize, processAmount);
 		this.fitAlgorithm = fitAlgorithm;
 	}
-	
+
 	// add the process into the waiting processes list
 	// this method is called from main
 	@Override
@@ -36,8 +41,22 @@ public class VariableSizePartitioning extends Memory{
 	 * Searches from the beginning of memory to the end for any available spots
 	 * Memory must be contiguous
 	 * False if no spot available
+	 * TODO if it can't fit in, we get ArrayIndexOutOfBoundsException
 	 */
 	private boolean firstFit(Process proc) {
+		for(Page  page: proc.getPages()) {
+			if(!firstFitHelper(proc, page)) {
+				// if we get here, there is no viable location for the next page of the process
+				// so we remove what pages we have already added
+				removeProcess(proc);
+				
+				return false;
+			}
+		}
+		// if we get here, all pages have been added and so the process has been added
+		return true;
+	}
+	private boolean firstFitHelper(Process proc, Page page) {
 		int freeSpace = 0;
 		// while we find a contiguous set of false booleans find out if it's the right fit
 		for(int i = 0; i < memory.length; i++) {
@@ -46,7 +65,7 @@ public class VariableSizePartitioning extends Memory{
 			while(i < memory.length && !memory[i]) {
 				freeSpace++;
 				// if the space is enough, then put it in and return true
-				if(freeSpace == proc.getSizeOfPageAt(0)) { // because this is VSP, there is only 1 "page"
+				if(freeSpace == page.spaceAmount) { 
 					proc.setIndexes(start, i);
 					addData(start, i);
 					return true;
@@ -55,7 +74,7 @@ public class VariableSizePartitioning extends Memory{
 			}
 			freeSpace = 0;
 		}
-		return false; // if we get here, there is no viable location for the process
+		return false;
 	}
 	
 	// similar to looking for holes in outputMemoryMap
@@ -108,7 +127,7 @@ public class VariableSizePartitioning extends Memory{
 		// continue running until all processes have started and completed
 		while(!waitingProcesses.isEmpty() || !lookupTable.isEmpty()) {
 			
-			// check if any processes have arrived TODO: Processes past time 0 don't say they've arrived
+			// check if any processes have arrived
 			for(int i = 0; i < waitingProcesses.size(); i++) {
 				if(time == waitingProcesses.get(i).getStartTime())
 					System.out.println("Process " + waitingProcesses.get(i).getId() + " has arrived at time " + time + ".");
@@ -177,7 +196,9 @@ public class VariableSizePartitioning extends Memory{
 		lookupTable.add(proc);		
 		outputMemoryMap();
 	}
+
 }
 /*
- * TODO: Best/Worst fit aren't working properly
+ * TODO save code by extending VariableSizePartitioning and only change what's necessary ?
+ * 		Necessary as in the fit algorithms
  */
