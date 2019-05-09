@@ -1,3 +1,229 @@
+**********************5/8/2019 9:30 PM**********************
+Memory Size: 2000
+Memory management policy (1- VSP, 2- PAG, 3- SEG): 1
+Fit algorithm (1- first-fit, 2- best-fit, 3- worst-fit): 1
+File name of the Input: D:\CS4310\Program3\vspIn.dat
+Starting Simulation.
+Process 1 has arrived at time 0.
+Process 2 has arrived at time 0.
+Process 3 has arrived at time 0.
+Process 4 has arrived at time 0.
+Process 5 has arrived at time 0.
+Process 6 has arrived at time 0.
+Starting Process 1 at time 0.
+Memory Map:
+	0-399: Process 1.
+	400-1999: Hole.
+
+Starting Process 2 at time 0.
+Memory Map:
+	0-399: Process 1.
+	400-599: Process 2.
+	600-1999: Hole.
+
+Starting Process 3 at time 0.
+Memory Map:
+	0-399: Process 1.
+	400-599: Process 2.
+	600-899: Process 3.
+	900-1999: Hole.
+
+Starting Process 4 at time 0.
+Memory Map:
+	0-399: Process 1.
+	400-599: Process 2.
+	600-899: Process 3.
+	900-999: Process 4.
+	1000-1999: Hole.
+
+Starting Process 5 at time 0.
+Memory Map:
+	0-399: Process 1.
+	400-599: Process 2.
+	600-899: Process 3.
+	900-999: Process 4.
+	1000-1499: Process 5.
+	1500-1999: Hole.
+
+Starting Process 6 at time 0.
+Memory Map:
+	0-399: Process 1.
+	400-599: Process 2.
+	600-899: Process 3.
+	900-999: Process 4.
+	1000-1499: Process 5.
+	1500-1899: Process 6.
+	1900-1999: Hole.
+
+Process 1 has completed at time 200.
+Process 3 has completed at time 200.
+Process 5 has completed at time 200.
+Memory Map:
+	400-599: Process 2.
+	900-999: Process 4.
+	1500-1899: Process 6.
+	0-400: Hole.
+	600-900: Hole.
+	1000-1500: Hole.
+	1900-1999: Hole.
+
+Process 7 has arrived at time 500.
+Starting Process 7 at time 500.
+Memory Map:
+	400-599: Process 2.
+	900-999: Process 4.
+	1500-1899: Process 6.
+	0-299: Process 7.
+	300-400: Hole.
+	600-900: Hole.
+	1000-1500: Hole.
+	1900-1999: Hole.
+
+Process 8 has arrived at time 600.
+Starting Process 8 at time 600.
+Memory Map:
+	400-599: Process 2.
+	900-999: Process 4.
+	1500-1899: Process 6.
+	0-299: Process 7.
+	1000-1499: Process 8.
+	300-400: Hole.
+	600-900: Hole.
+	1900-1999: Hole.
+
+Process 9 has arrived at time 700.
+Process 2 has completed at time 2000.
+Process 4 has completed at time 2000.
+Process 6 has completed at time 2000.
+Process 7 has completed at time 2000.
+Memory Map:
+	1000-1499: Process 8.
+	0-1000: Hole.
+	1500-1999: Hole.
+
+Starting Process 9 at time 2000.
+Memory Map:
+	1000-1499: Process 8.
+	0-399: Process 9.
+	400-1000: Hole.
+	1500-1999: Hole.
+
+Process 8 has completed at time 2100.
+Memory Map:
+	0-399: Process 9.
+	400-1999: Hole.
+
+Process 9 has completed at time 2500.
+Memory Map:
+	0-1999: Hole.
+
+Simulation ended.
+
+**********************5/8/2019 9:30 PM**********************
+Memory Size: 2000
+Memory management policy (1- VSP, 2- PAG, 3- SEG): 3
+Fit algorithm (1- first-fit, 2- best-fit, 3- worst-fit): 1
+File name of the Input: D:\CS4310\Program3\sIn.dat
+Starting Simulation.
+Process 1 has arrived at time 0.
+Process 2 has arrived at time 0.
+Process 3 has arrived at time 0.
+Process 4 has arrived at time 0.
+Process 5 has arrived at time 0.
+Process 6 has arrived at time 0.
+Starting Process 1 at time 0.
+Memory Map:
+	0-199: Process 1.
+	200-399: Process 1.
+	400-1999: Hole.
+
+Starting Process 2 at time 0.
+Memory Map:
+	0-199: Process 1.
+	200-399: Process 1.
+	400-599: Process 2.
+	600-1999: Hole.
+
+Starting Process 3 at time 0.
+Memory Map:
+	0-199: Process 1.
+	200-399: Process 1.
+	400-599: Process 2.
+	600-799: Process 3.
+	800-899: Process 3.
+	900-1999: Hole.
+
+Starting Process 4 at time 0.
+Memory Map:
+	0-199: Process 1.
+	200-399: Process 1.
+	400-599: Process 2.
+	600-799: Process 3.
+	800-899: Process 3.
+	900-999: Process 4.
+	1000-1999: Hole.
+
+Starting Process 5 at time 0.
+Memory Map:
+	0-199: Process 1.
+	200-399: Process 1.
+	400-599: Process 2.
+	600-799: Process 3.
+	800-899: Process 3.
+	900-999: Process 4.
+	1000-1199: Process 5.
+	1200-1399: Process 5.
+	1400-1499: Process 5.
+	1500-1999: Hole.
+
+Starting Process 6 at time 0.
+Memory Map:
+	0-199: Process 1.
+	200-399: Process 1.
+	400-599: Process 2.
+	600-799: Process 3.
+	800-899: Process 3.
+	900-999: Process 4.
+	1000-1199: Process 5.
+	1200-1399: Process 5.
+	1400-1499: Process 5.
+	1500-1899: Process 6.
+	1900-1999: Hole.
+
+Process 1 has completed at time 200.
+Process 3 has completed at time 200.
+Process 5 has completed at time 200.
+Memory Map:
+	400-599: Process 2.
+	900-999: Process 4.
+	1500-1899: Process 6.
+	0-400: Hole.
+	600-900: Hole.
+	1000-1500: Hole.
+	1900-1999: Hole.
+
+Process 7 has arrived at time 500.
+Starting Process 7 at time 500.
+Memory Map:
+	400-599: Process 2.
+	900-999: Process 4.
+	1500-1899: Process 6.
+	0-299: Process 7.
+	1000-1499: Process 7.
+	300-400: Hole.
+	600-900: Hole.
+	1900-1999: Hole.
+
+Process 8 has arrived at time 600.
+Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: 3
+	at memoryManagementSimulator.Process.setIndexes(Process.java:28)
+	at memoryManagementSimulator.Segmentation.firstFitHelper(Segmentation.java:69)
+	at memoryManagementSimulator.Segmentation.firstFit(Segmentation.java:48)
+	at memoryManagementSimulator.Segmentation.startSimulation(Segmentation.java:162)
+	at memoryManagementSimulator.Segmentation.addProcess(Segmentation.java:36)
+	at memoryManagementSimulator.Main.memoryManagementSegmentation(Main.java:109)
+	at memoryManagementSimulator.Main.main(Main.java:25)
+
 **********************5/8/2019 3:41 PM**********************
 Memory Size: 2000
 Memory management policy (1- VSP, 2- PAG, 3- SEG): 1

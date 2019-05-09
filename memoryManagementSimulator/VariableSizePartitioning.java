@@ -85,10 +85,11 @@ public class VariableSizePartitioning extends Memory{
 			Collections.reverse(holes); // sort in descending order of the totalSize
 		
 		// prune small holes that can't fit the process 
-		//Predicate<Hole> condition = Hole -> Hole.smallerThan(proc.getPageAt(0).spaceAmount);
-		//holes.removeIf(condition); 
+		Predicate<Hole> condition = Hole -> Hole.smallerThan(proc.getPageAt(0).spaceAmount);
+		holes.removeIf(condition); 
 		
-		// search the holes from smallest to largest
+		// TODO can remove this if pruned
+		// search the holes from smallest to largest or largest to smallest for best and worst fit respectively
 		for(Hole hole : holes) {
 			if(proc.getPageAt(0).spaceAmount <= hole.getTotalSize()) { 
 				proc.setIndexes(hole.getStartIndex(), hole.getStartIndex() + proc.getPageAt(0).spaceAmount - 1);

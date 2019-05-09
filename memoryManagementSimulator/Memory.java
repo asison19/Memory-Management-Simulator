@@ -103,6 +103,5 @@ public abstract class Memory {
 	}
 	
 	public abstract void addProcess(Process proc);
-	//public abstract boolean removeProcess(Process proc, int time); // TODO delete this?
 	
 }
