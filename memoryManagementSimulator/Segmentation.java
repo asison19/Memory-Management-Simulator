@@ -41,7 +41,7 @@ public class Segmentation extends Memory{
 	 * Searches from the beginning of memory to the end for any available spots
 	 * Memory must be contiguous
 	 * False if no spot available
-	 * TODO if it can't fit in, we get ArrayIndexOutOfBoundsException
+	 * TODO Optimize by not putting in any pages if all pages don't fit.
 	 */
 	private boolean firstFit(Process proc) {
 		for(Page  page: proc.getPages()) {
@@ -49,6 +49,7 @@ public class Segmentation extends Memory{
 				// if we get here, there is no viable location for the next page of the process
 				// so we remove what pages we have already added
 				removeProcess(proc);
+				proc.resetNextPage();
 				
 				return false;
 			}
@@ -195,6 +196,17 @@ public class Segmentation extends Memory{
 		System.out.println("Starting Process " + proc.getId() + " at time "+ time +".");
 		lookupTable.add(proc);		
 		outputMemoryMap();
+	}
+
+	@Override
+	public void outputProcesses() {
+		for(Process proc: lookupTable) {
+			for(int i = 0;i < proc.getPageAmount(); i++) {
+				System.out.println("\t" + proc.getPageAt(i).startIndex + "-"
+			+ proc.getPageAt(i).endIndex + ": Process " + proc.getId() + ", Segment "+ proc.getPageAt(i).id + ".");
+			}
+		}
+		
 	}
 
 }

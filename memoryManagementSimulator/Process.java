@@ -19,6 +19,7 @@ public class Process {
 		//create the pages and assign them the memory they need
 		for(int i = 0; i < pages.length; i++) {
 			pages[i] = new Page();
+			pages[i].id = i + 1;
 			pages[i].spaceAmount = spaceAmount[i];
 		}
 	}

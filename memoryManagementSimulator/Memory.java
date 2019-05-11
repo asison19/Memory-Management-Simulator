@@ -23,7 +23,7 @@ public abstract class Memory {
 	/*
 	 * Contains the holes in memory
 	 */
-	//protected ArrayList<Hole> holes = new ArrayList<>();
+	protected ArrayList<Hole> holes = new ArrayList<>();
 	
 	protected int processAmount;
 	protected int finishedProcessAmount;
@@ -74,12 +74,7 @@ public abstract class Memory {
 		System.out.println("Memory Map:");
 		
 		// output the processes that are currently running
-		for(Process proc: lookupTable) {
-			for(int i = 0;i < proc.getPageAmount(); i++) {
-				System.out.println("\t" + proc.getPageAt(i).startIndex + "-"
-			+ proc.getPageAt(i).endIndex + ": Process " + proc.getId() + ".");
-			}
-		}
+		outputProcesses();
 		
 		// Output the amount of free space, the holes. Does not include internal fragmentation
 		for(int i = 0; i < memory.length; i++) {
@@ -89,12 +84,12 @@ public abstract class Memory {
 			while(i < memory.length && !memory[i]) {
 				i++;
 				if(i == (memory.length - 1) || (i < memory.length && memory[i])) {
-					//holes.add(new Hole(start, i));
+					holes.add(new Hole(start, i));
 					System.out.println("\t" + start + "-" + i + ": Hole.");
 				}
 			}
 		}
-		//holes.removeAll(holes);
+		holes.removeAll(holes);
 		System.out.println();
 	}
 	
@@ -102,6 +97,13 @@ public abstract class Memory {
 		return processAmount;
 	}
 	
+	public void removeHole(Hole hole) {
+		
+	}
+	
+	// add the process into the waiting list and start the simulation once all processes are added
 	public abstract void addProcess(Process proc);
+	// output the processes that are currently running
+	public abstract void outputProcesses(); 
 	
 }

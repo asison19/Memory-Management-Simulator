@@ -178,6 +178,18 @@ public class VariableSizePartitioning extends Memory{
 		lookupTable.add(proc);		
 		outputMemoryMap();
 	}
+
+	@Override
+	public void outputProcesses() {
+		// output the processes that are currently running
+		for(Process proc: lookupTable) {
+			for(int i = 0;i < proc.getPageAmount(); i++) {
+				System.out.println("\t" + proc.getPageAt(i).startIndex + "-"
+			+ proc.getPageAt(i).endIndex + ": Process " + proc.getId() +".");
+			}
+		}
+		
+	}
 }
 /*
  * TODO: Best/Worst fit aren't working properly

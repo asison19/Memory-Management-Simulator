@@ -7,6 +7,7 @@ package memoryManagementSimulator;
  * which may contain internal fragmentation
  */
 public class Page{
+	public int id;
 	public int startIndex;
 	public int endIndex;
 	public int spaceAmount;
