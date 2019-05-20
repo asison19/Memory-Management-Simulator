@@ -31,6 +31,20 @@ public class Process {
 		nextPage++;
 	}
 	
+	public void setIndexesOfPageAt(int pageID, int start, int end) {
+		pages[pageID].startIndex = start;
+		pages[pageID].endIndex = end;
+	}
+	
+	// remove all the page indexes and reset nextPage to zero
+	public void removeAllIndexes() {
+		for(int i = 0; i < pages.length; i++) {
+			pages[nextPage].resetIndexes();
+		}
+			
+		nextPage = 0;
+	}
+	
 	public int getPageAmount() {
 		return pages.length;
 	}

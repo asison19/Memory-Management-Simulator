@@ -45,6 +45,8 @@ public abstract class Memory {
 		}
 		// proc.resetNextPage(); // Not used in VSP,
 	}
+	
+	// TODO remove this if unused anywhere
 	protected void removeProcess(Process proc) {
 		// for however many pages there are in the process
 		for(int i = 0 ; i < proc.getPageAmount(); i++) {

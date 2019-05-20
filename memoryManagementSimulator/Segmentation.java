@@ -41,24 +41,35 @@ public class Segmentation extends Memory{
 	 * Searches from the beginning of memory to the end for any available spots
 	 * Memory must be contiguous
 	 * False if no spot available
-	 * TODO Optimize by not putting in any pages if all pages don't fit.
 	 */
 	private boolean firstFit(Process proc) {
+		IndexSet[] freeHoles = new IndexSet[proc.getPageAmount()];
+		
 		for(Page  page: proc.getPages()) {
-			if(!firstFitHelper(proc, page)) {
+			if(!firstFitHelper(proc, page, freeHoles)) {
 				// if we get here, there is no viable location for the next page of the process
 				// so we remove what pages we have already added
-				removeProcess(proc);
-				proc.resetNextPage();
+				//removeProcess(proc);
+				// proc.removeAllIndexes();
 				
 				return false;
 			}
 		}
+		
+		// set the indexes for the respective pages of the processes
+		// add all the pages and their data
+		for(int i = 0 ; i < proc.getPageAmount(); i++) {
+			proc.setIndexesOfPageAt(i, freeHoles[i].startIndex, freeHoles[i].endIndex);
+			addData(freeHoles[i].startIndex, freeHoles[i].endIndex);
+		}
+			
 		// if we get here, all pages have been added and so the process has been added
 		return true;
 	}
-	private boolean firstFitHelper(Process proc, Page page) {
+	private boolean firstFitHelper(Process proc, Page page, IndexSet[] freeHoles) {
 		int freeSpace = 0;
+		
+		
 		// while we find a contiguous set of false booleans find out if it's the right fit
 		for(int i = 0; i < memory.length; i++) {
 			// if we find one free space, continue looking to see if it's contiguous
@@ -67,8 +78,9 @@ public class Segmentation extends Memory{
 				freeSpace++;
 				// if the space is enough, then put it in and return true
 				if(freeSpace == page.spaceAmount) { 
-					proc.setIndexes(start, i);
-					addData(start, i);
+					//proc.setIndexes(start, i);
+					//addData(start, i);
+					freeHoles[page.id - 1] = new IndexSet(start, i );
 					return true;
 				}
 				i++;

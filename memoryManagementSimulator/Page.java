@@ -8,7 +8,11 @@ package memoryManagementSimulator;
  */
 public class Page{
 	public int id;
-	public int startIndex;
-	public int endIndex;
+	public int startIndex = -1; // -1 meaning it has not been set yet
+	public int endIndex = -1;
 	public int spaceAmount;
+	public void resetIndexes() {
+		startIndex = -1;
+		endIndex = -1;
+	}
 }
