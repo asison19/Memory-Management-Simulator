@@ -85,15 +85,15 @@ public class VariableSizePartitioning extends Memory{
 			Collections.reverse(holes); // sort in descending order of the totalSize
 		
 		// prune small holes that can't fit the process 
-		Predicate<Hole> condition = Hole -> Hole.smallerThan(proc.getPageAt(0).spaceAmount);
+		Predicate<Hole> condition = Hole -> Hole.smallerThan(proc.getSegmentAt(0).spaceAmount);
 		holes.removeIf(condition); 
 		
 		// TODO can remove this if pruned
 		// search the holes from smallest to largest or largest to smallest for best and worst fit respectively
 		for(Hole hole : holes) {
-			if(proc.getPageAt(0).spaceAmount <= hole.getTotalSize()) { 
-				proc.setIndexes(hole.getStartIndex(), hole.getStartIndex() + proc.getPageAt(0).spaceAmount - 1);
-				addData(hole.getStartIndex(), hole.getStartIndex() + proc.getPageAt(0).spaceAmount - 1);
+			if(proc.getSegmentAt(0).spaceAmount <= hole.getTotalSize()) { 
+				proc.setIndexes(hole.getStartIndex(), hole.getStartIndex() + proc.getSegmentAt(0).spaceAmount - 1);
+				addData(hole.getStartIndex(), hole.getStartIndex() + proc.getSegmentAt(0).spaceAmount - 1);
 				return true; // end if we've found  a spot it can fit in
 			}
 		}
@@ -183,9 +183,9 @@ public class VariableSizePartitioning extends Memory{
 	public void outputProcesses() {
 		// output the processes that are currently running
 		for(Process proc: lookupTable) {
-			for(int i = 0;i < proc.getPageAmount(); i++) {
-				System.out.println("\t" + proc.getPageAt(i).startIndex + "-"
-			+ proc.getPageAt(i).endIndex + ": Process " + proc.getId() +".");
+			for(int i = 0;i < proc.getSegmentAmount(); i++) {
+				System.out.println("\t" + proc.getSegmentAt(i).startIndex + "-"
+			+ proc.getSegmentAt(i).endIndex + ": Process " + proc.getId() +".");
 			}
 		}
 		

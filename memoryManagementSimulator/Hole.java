@@ -10,6 +10,7 @@ public class Hole implements Comparable<Hole>{
 	private int startIndex;
 	private int endIndex;
 	private int totalSize;
+	
 	public Hole(int startIndex, int endIndex) {
 		this.startIndex = startIndex;
 		this.endIndex = endIndex;
@@ -26,6 +27,11 @@ public class Hole implements Comparable<Hole>{
 	
 	public int getTotalSize() {
 		return totalSize;
+	}
+	
+	public void setIndexes(int start, int end) {
+		startIndex = start;
+		endIndex = end;
 	}
 	
 	//@param size, processes' size

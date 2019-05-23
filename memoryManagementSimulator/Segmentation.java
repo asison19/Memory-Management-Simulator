@@ -43,50 +43,49 @@ public class Segmentation extends Memory{
 	 * False if no spot available
 	 */
 	private boolean firstFit(Process proc) {
-		IndexSet[] freeHoles = new IndexSet[proc.getPageAmount()];
+		IndexSet[] freeHoles = new IndexSet[proc.getSegmentAmount()];
 		
-		for(Page  page: proc.getPages()) {
-			if(!firstFitHelper(proc, page, freeHoles)) {
-				// if we get here, there is no viable location for the next page of the process
-				// so we remove what pages we have already added
-				//removeProcess(proc);
-				// proc.removeAllIndexes();
-				
+		// for all the pages, see if they can all fit
+		for(Segment segment: proc.getSegments()) {
+			// if one segment can't fit, the entire process won't be added, so return false, and reset the holes
+			// continue otherwise
+			if (!(firstFitHelper(proc, segment,freeHoles))){
+				findHoles();
 				return false;
 			}
 		}
 		
 		// set the indexes for the respective pages of the processes
-		// add all the pages and their data
-		for(int i = 0 ; i < proc.getPageAmount(); i++) {
-			proc.setIndexesOfPageAt(i, freeHoles[i].startIndex, freeHoles[i].endIndex);
+		// add all the segments and their data
+		for(int i = 0 ; i < proc.getSegmentAmount(); i++) {
+			proc.setIndexesOfSegmentAt(i, freeHoles[i].startIndex, freeHoles[i].endIndex);
 			addData(freeHoles[i].startIndex, freeHoles[i].endIndex);
-		}
-			
-		// if we get here, all pages have been added and so the process has been added
+		}	
+		
+		findHoles();
+		// if we get here, all segments have been added and so the process has been added
 		return true;
 	}
-	private boolean firstFitHelper(Process proc, Page page, IndexSet[] freeHoles) {
-		int freeSpace = 0;
-		
-		
-		// while we find a contiguous set of false booleans find out if it's the right fit
-		for(int i = 0; i < memory.length; i++) {
-			// if we find one free space, continue looking to see if it's contiguous
-			int start = i;
-			while(i < memory.length && !memory[i]) {
-				freeSpace++;
-				// if the space is enough, then put it in and return true
-				if(freeSpace == page.spaceAmount) { 
-					//proc.setIndexes(start, i);
-					//addData(start, i);
-					freeHoles[page.id - 1] = new IndexSet(start, i );
-					return true;
+	private boolean firstFitHelper(Process proc, Segment segment, IndexSet[] freeHoles) {
+		for(Hole hole: holes) {
+			// if the hole is bigger than the space needed, then set it to be added
+			if(hole.getTotalSize() > segment.spaceAmount) { 
+				//segment.setIndexes(hole.getStartIndex(), hole.getStartIndex() + segment.spaceAmount);
+				freeHoles[segment.id - 1] = new IndexSet(hole.getStartIndex(), hole.getStartIndex() + segment.spaceAmount - 1);
+				
+				// if the hole is the same size, remove the hole and return
+				if(hole.getTotalSize() == segment.spaceAmount) {
+					holes.remove(hole);
+					
+				} else { // else set the hole's new indexes
+					hole.setIndexes(freeHoles[segment.id - 1].endIndex + 1, hole.getEndIndex());
+					
 				}
-				i++;
+				return true;
 			}
-			freeSpace = 0;
 		}
+		
+		// if we get here, none of the holes are large enough for the segment size
 		return false;
 	}
 	
@@ -117,14 +116,14 @@ public class Segmentation extends Memory{
 			Collections.reverse(holes); // sort in descending order of the totalSize
 		
 		// prune small holes that can't fit the process 
-		//Predicate<Hole> condition = Hole -> Hole.smallerThan(proc.getPageAt(0).spaceAmount);
-		//holes.removeIf(condition); 
+		Predicate<Hole> condition = Hole -> Hole.smallerThan(proc.getSegmentAt(0).spaceAmount);
+		holes.removeIf(condition); 
 		
-		// search the holes from smallest to largest
+		// search the holes from smallest to largest or largest to smallest
 		for(Hole hole : holes) {
-			if(proc.getPageAt(0).spaceAmount <= hole.getTotalSize()) { 
-				proc.setIndexes(hole.getStartIndex(), hole.getStartIndex() + proc.getPageAt(0).spaceAmount - 1);
-				addData(hole.getStartIndex(), hole.getStartIndex() + proc.getPageAt(0).spaceAmount - 1);
+			if(proc.getSegmentAt(0).spaceAmount <= hole.getTotalSize()) { 
+				proc.setIndexes(hole.getStartIndex(), hole.getStartIndex() + proc.getSegmentAt(0).spaceAmount - 1);
+				addData(hole.getStartIndex(), hole.getStartIndex() + proc.getSegmentAt(0).spaceAmount - 1);
 				return true; // end if we've found  a spot it can fit in
 			}
 		}
@@ -213,9 +212,9 @@ public class Segmentation extends Memory{
 	@Override
 	public void outputProcesses() {
 		for(Process proc: lookupTable) {
-			for(int i = 0;i < proc.getPageAmount(); i++) {
-				System.out.println("\t" + proc.getPageAt(i).startIndex + "-"
-			+ proc.getPageAt(i).endIndex + ": Process " + proc.getId() + ", Segment "+ proc.getPageAt(i).id + ".");
+			for(int i = 0;i < proc.getSegmentAmount(); i++) {
+				System.out.println("\t" + proc.getSegmentAt(i).startIndex + "-"
+			+ proc.getSegmentAt(i).endIndex + ": Process " + proc.getId() + ", Segment "+ proc.getSegmentAt(i).id + ".");
 			}
 		}
 		

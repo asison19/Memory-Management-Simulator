@@ -5,7 +5,7 @@ public class Process {
 	private int startTime; // the time the process started
 	private int endTime; // the amount time alive fir the process to end
 	private int[] spaceAmount; // the amount of space that the process needs at one page
-	private Page[] pages; // the pages of the process
+	private Segment[] segments; // the pages of the process
 	private int nextPage = 0; // the index of pages
 	private int timeAlive = 0; // how long the process has run
 	
@@ -14,47 +14,47 @@ public class Process {
 		this.startTime = startTime;
 		this.endTime = endTime;
 		this.spaceAmount = spaceAmount;
-		this.pages = new Page[pageAmount];
+		this.segments = new Segment[pageAmount];
 		
 		//create the pages and assign them the memory they need
-		for(int i = 0; i < pages.length; i++) {
-			pages[i] = new Page();
-			pages[i].id = i + 1;
-			pages[i].spaceAmount = spaceAmount[i];
+		for(int i = 0; i < segments.length; i++) {
+			segments[i] = new Segment();
+			segments[i].id = i + 1;
+			segments[i].spaceAmount = spaceAmount[i];
 		}
 	}
 	
 	//set the next indexes
 	public void setIndexes(int start, int end) {
-		pages[nextPage].startIndex = start;
-		pages[nextPage].endIndex = end;
+		segments[nextPage].startIndex = start;
+		segments[nextPage].endIndex = end;
 		nextPage++;
 	}
 	
-	public void setIndexesOfPageAt(int pageID, int start, int end) {
-		pages[pageID].startIndex = start;
-		pages[pageID].endIndex = end;
+	public void setIndexesOfSegmentAt(int pageID, int start, int end) {
+		segments[pageID].startIndex = start;
+		segments[pageID].endIndex = end;
 	}
 	
+	// TODO remove if unused
 	// remove all the page indexes and reset nextPage to zero
 	public void removeAllIndexes() {
-		for(int i = 0; i < pages.length; i++) {
-			pages[nextPage].resetIndexes();
-		}
+		for(int i = 0; i < segments.length; i++)
+			segments[nextPage].resetIndexes();
 			
 		nextPage = 0;
 	}
 	
-	public int getPageAmount() {
-		return pages.length;
+	public int getSegmentAmount() {
+		return segments.length;
 	}
 	
-	public Page getPageAt(int i) {
-		return pages[i];
+	public Segment getSegmentAt(int i) {
+		return segments[i];
 	}
 	
 	public int getSizeOfPageAt(int i) {
-		return pages[i].spaceAmount;
+		return segments[i].spaceAmount;
 	}
 	
 	public int getId() {
@@ -77,8 +77,8 @@ public class Process {
 		return (timeAlive >= endTime);
 	}
 	
-	public Page[] getPages() {
-		return pages;
+	public Segment[] getSegments() {
+		return segments;
 	}
 	
 	public void resetNextPage() {
