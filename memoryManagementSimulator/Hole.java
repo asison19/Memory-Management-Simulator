@@ -32,6 +32,7 @@ public class Hole implements Comparable<Hole>{
 	public void setIndexes(int start, int end) {
 		startIndex = start;
 		endIndex = end;
+		totalSize = endIndex - startIndex + 1;
 	}
 	
 	//@param size, processes' size

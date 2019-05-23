@@ -87,7 +87,7 @@ public abstract class Memory {
 			+ "-" + hole.getEndIndex() + ": Hole.");
 		
 		
-		holes.removeAll(holes);
+		// holes.removeAll(holes);
 		System.out.println();
 	}
 	
@@ -100,6 +100,8 @@ public abstract class Memory {
 	}
 	
 	protected void findHoles() {
+		holes.removeAll(holes);
+		
 		// Output the amount of free space, the holes. Does not include internal fragmentation
 		for(int i = 0; i < memory.length; i++) {
 			int start = i;

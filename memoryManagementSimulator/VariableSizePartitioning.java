@@ -46,7 +46,7 @@ public class VariableSizePartitioning extends Memory{
 			while(i < memory.length && !memory[i]) {
 				freeSpace++;
 				// if the space is enough, then put it in and return true
-				if(freeSpace == proc.getSizeOfPageAt(0)) { // because this is VSP, there is only 1 "page"
+				if(freeSpace == proc.getSizeOfSegmentAt(0)) { // because this is VSP, there is only 1 segment
 					proc.setIndexes(start, i);
 					addData(start, i);
 					return true;
@@ -109,7 +109,7 @@ public class VariableSizePartitioning extends Memory{
 		// continue running until all processes have started and completed
 		while(!waitingProcesses.isEmpty() || !lookupTable.isEmpty()) {
 			
-			// check if any processes have arrived TODO: Processes past time 0 don't say they've arrived
+			// check if any processes have arrived
 			for(int i = 0; i < waitingProcesses.size(); i++) {
 				if(time == waitingProcesses.get(i).getStartTime())
 					System.out.println("Process " + waitingProcesses.get(i).getId() + " has arrived at time " + time + ".");

@@ -45,31 +45,29 @@ public class Segmentation extends Memory{
 	private boolean firstFit(Process proc) {
 		IndexSet[] freeHoles = new IndexSet[proc.getSegmentAmount()];
 		
-		// for all the pages, see if they can all fit
+		// for all the segments, see if they can all fit
 		for(Segment segment: proc.getSegments()) {
 			// if one segment can't fit, the entire process won't be added, so return false, and reset the holes
 			// continue otherwise
 			if (!(firstFitHelper(proc, segment,freeHoles))){
-				findHoles();
+
 				return false;
 			}
 		}
 		
-		// set the indexes for the respective pages of the processes
+		// set the indexes for the respective segments of the processes
 		// add all the segments and their data
 		for(int i = 0 ; i < proc.getSegmentAmount(); i++) {
 			proc.setIndexesOfSegmentAt(i, freeHoles[i].startIndex, freeHoles[i].endIndex);
 			addData(freeHoles[i].startIndex, freeHoles[i].endIndex);
 		}	
-		
-		findHoles();
 		// if we get here, all segments have been added and so the process has been added
 		return true;
 	}
 	private boolean firstFitHelper(Process proc, Segment segment, IndexSet[] freeHoles) {
 		for(Hole hole: holes) {
 			// if the hole is bigger than the space needed, then set it to be added
-			if(hole.getTotalSize() > segment.spaceAmount) { 
+			if(hole.getTotalSize() >= segment.spaceAmount) { 
 				//segment.setIndexes(hole.getStartIndex(), hole.getStartIndex() + segment.spaceAmount);
 				freeHoles[segment.id - 1] = new IndexSet(hole.getStartIndex(), hole.getStartIndex() + segment.spaceAmount - 1);
 				
@@ -84,7 +82,6 @@ public class Segmentation extends Memory{
 				return true;
 			}
 		}
-		
 		// if we get here, none of the holes are large enough for the segment size
 		return false;
 	}
@@ -128,7 +125,6 @@ public class Segmentation extends Memory{
 			}
 		}
 		
-		//holes.removeAll(holes); // unnecessary here
 		return false; 
 	}
 	
@@ -162,9 +158,10 @@ public class Segmentation extends Memory{
 			 * if they can run, remove from wait-list and add to lookupTable if there's space in memory
 			 * if no space, then leave in wait-list
 			 */
+			findHoles(); // find the holes in memory
 			for(Process proc : waitingProcesses) {
 
-				// check if process start time has already passed
+				// check if process start time has already passed, if not, check next process
 				if(time >= proc.getStartTime()) {
 					
 					// attempts to add into memory
@@ -187,6 +184,7 @@ public class Segmentation extends Memory{
 							startProcess(proc, time);
 						}
 					}
+					findHoles();
 				}
 			}
 			
@@ -203,6 +201,11 @@ public class Segmentation extends Memory{
 		System.out.println("Simulation ended.");
 	}
 	
+	
+	/*
+	 * Start the process at time, time by adding it to the running processes list.
+	 * process will be removed later together with any other starting processes 
+	 */
 	private void startProcess(Process proc, int time) {
 		System.out.println("Starting Process " + proc.getId() + " at time "+ time +".");
 		lookupTable.add(proc);		

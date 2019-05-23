@@ -53,7 +53,7 @@ public class Process {
 		return segments[i];
 	}
 	
-	public int getSizeOfPageAt(int i) {
+	public int getSizeOfSegmentAt(int i) {
 		return segments[i].spaceAmount;
 	}
 	
