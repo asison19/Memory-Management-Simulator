@@ -49,10 +49,8 @@ public class Segmentation extends Memory{
 		for(Segment segment: proc.getSegments()) {
 			// if one segment can't fit, the entire process won't be added, so return false, and reset the holes
 			// continue otherwise
-			if (!(firstFitHelper(proc, segment,freeHoles))){
-
+			if (!(fitHelper(proc, segment, freeHoles)))
 				return false;
-			}
 		}
 		
 		// set the indexes for the respective segments of the processes
@@ -64,21 +62,19 @@ public class Segmentation extends Memory{
 		// if we get here, all segments have been added and so the process has been added
 		return true;
 	}
-	private boolean firstFitHelper(Process proc, Segment segment, IndexSet[] freeHoles) {
+	private boolean fitHelper(Process proc, Segment segment, IndexSet[] freeHoles) {
 		for(Hole hole: holes) {
 			// if the hole is bigger than the space needed, then set it to be added
 			if(hole.getTotalSize() >= segment.spaceAmount) { 
 				//segment.setIndexes(hole.getStartIndex(), hole.getStartIndex() + segment.spaceAmount);
-				freeHoles[segment.id - 1] = new IndexSet(hole.getStartIndex(), hole.getStartIndex() + segment.spaceAmount - 1);
-				
-				// if the hole is the same size, remove the hole and return
-				if(hole.getTotalSize() == segment.spaceAmount) {
+				freeHoles[segment.id - 1] = new IndexSet(hole.getStartIndex(), 
+						hole.getStartIndex() + segment.spaceAmount - 1);
+				// if the hole is the same size, remove the hole
+				if(hole.getTotalSize() == segment.spaceAmount)
 					holes.remove(hole);
-					
-				} else { // else set the hole's new indexes
+				else // else set the hole's new indexes
 					hole.setIndexes(freeHoles[segment.id - 1].endIndex + 1, hole.getEndIndex());
-					
-				}
+				checkBestOrWorstFit();
 				return true;
 			}
 		}
@@ -89,43 +85,18 @@ public class Segmentation extends Memory{
 	// similar to looking for holes in outputMemoryMap
 	// looks for contiguous memory that can fit the process
 	// @param isBest, if true - best fit, if false - worst fit
-	private boolean fitBW(Process proc, boolean isBest)  {
-		ArrayList<Hole> holes = new ArrayList<>();
+	private boolean fitBW(Process proc)  {	
+		checkBestOrWorstFit();
 		
-		// Search for the holes and add them all into a list
-		// TODO optimize. redundant to continue searching if hole is larger than another hole that itself
-		// is larger than the space needed.
-		for(int i = 0; i < memory.length; i++) {
-			int start = i;
-			
-			// if we find a empty space, look to see how much in a row
-			while(i < memory.length && !memory[i]) { 
-				i++;
-				if (i == (memory.length - 1) || (i < memory.length && memory[i])) {
-					holes.add(new Hole(start, i));
-				}
-			}
-		}
-		
-		if(isBest)
+		// after sorting the holes, we can use the first fit algorithm 
+		return firstFit(proc);
+	}
+	
+	private void checkBestOrWorstFit() {
+		if(fitAlgorithm == 2)
 			Collections.sort(holes); // sort in ascending order of the totalSize
-		else
+		else if(fitAlgorithm == 3)
 			Collections.reverse(holes); // sort in descending order of the totalSize
-		
-		// prune small holes that can't fit the process 
-		Predicate<Hole> condition = Hole -> Hole.smallerThan(proc.getSegmentAt(0).spaceAmount);
-		holes.removeIf(condition); 
-		
-		// search the holes from smallest to largest or largest to smallest
-		for(Hole hole : holes) {
-			if(proc.getSegmentAt(0).spaceAmount <= hole.getTotalSize()) { 
-				proc.setIndexes(hole.getStartIndex(), hole.getStartIndex() + proc.getSegmentAt(0).spaceAmount - 1);
-				addData(hole.getStartIndex(), hole.getStartIndex() + proc.getSegmentAt(0).spaceAmount - 1);
-				return true; // end if we've found  a spot it can fit in
-			}
-		}
-		
-		return false; 
 	}
 	
 	private void startSimulation() {
@@ -164,25 +135,20 @@ public class Segmentation extends Memory{
 				// check if process start time has already passed, if not, check next process
 				if(time >= proc.getStartTime()) {
 					
-					// attempts to add into memory
-					// first fit
-					if(fitAlgorithm == 1){
-						// if true, we fit process into memory and now will add to lookupTable and remove from wait-list
-						if(firstFit(proc)) {
+					// attempts to add into memory	
+					switch(fitAlgorithm) {
+					case 1: // first fit
+						if(firstFit(proc))
 							startProcess(proc, time);
-						}
-						
-						// best fit
-					} else if(fitAlgorithm == 2) {
-						if(fitBW(proc, true)) {
+						break;
+					case 2: // best fit
+						if(fitBW(proc))
 							startProcess(proc, time);
-						}
-						
-						// worst fit
-					} else if(fitAlgorithm == 3) {
-						if(fitBW(proc, false)) {
+						break;
+					case 3: // worst fit
+						if(fitBW(proc))
 							startProcess(proc, time);
-						}
+						break;
 					}
 					findHoles();
 				}
@@ -193,9 +159,8 @@ public class Segmentation extends Memory{
 				waitingProcesses.remove(proc);
 			
 			// increment time for the process if it is not complete
-			for(int i = 0; i < lookupTable.size(); i++) {
+			for(int i = 0; i < lookupTable.size(); i++)
 				lookupTable.get(i).incrementTimeAlive(); 
-			}
 			time++;
 		} // end while loop
 		System.out.println("Simulation ended.");
@@ -222,9 +187,19 @@ public class Segmentation extends Memory{
 		}
 		
 	}
-
+	
+	/*
+	 * Inner class IndexSet
+	 * Used to help in first fit algorithm,
+	 * by  keeping track of what index for each segment to go to before
+	 * finding out if all segments can or can't fit in memory boolean array.
+	 */
+	private class IndexSet {
+		public IndexSet(int startIndex, int endIndex) {
+			this.startIndex = startIndex;
+			this.endIndex = endIndex;
+		}
+		int startIndex;
+		int endIndex;
+	}
 }
-/*
- * TODO save code by extending VariableSizePartitioning and only change what's necessary ?
- * 		Necessary as in the fit algorithms
- */

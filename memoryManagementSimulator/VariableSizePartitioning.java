@@ -137,25 +137,20 @@ public class VariableSizePartitioning extends Memory{
 				// check if process start time has already passed
 				if(time >= proc.getStartTime()) {
 					
-					// attempts to add into memory
-					// first fit
-					if(fitAlgorithm == 1){
-						// if true, we fit process into memory and now will add to lookupTable and remove from wait-list
-						if(firstFit(proc)) {
+					// attempts to add into memory	
+					switch(fitAlgorithm) {
+					case 1: // first fit
+						if(firstFit(proc))
 							startProcess(proc, time);
-						}
-						
-						// best fit
-					} else if(fitAlgorithm == 2) {
-						if(fitBW(proc, true)) {
+						break;
+					case 2: // best fit
+						if(fitBW(proc, true))
 							startProcess(proc, time);
-						}
-						
-						// worst fit
-					} else if(fitAlgorithm == 3) {
-						if(fitBW(proc, false)) {
+						break;
+					case 3: // worst fit
+						if(fitBW(proc, false))
 							startProcess(proc, time);
-						}
+						break;
 					}
 				}
 			}
@@ -165,9 +160,8 @@ public class VariableSizePartitioning extends Memory{
 				waitingProcesses.remove(proc);
 			
 			// increment time for the process if it is not complete
-			for(int i = 0; i < lookupTable.size(); i++) {
+			for(int i = 0; i < lookupTable.size(); i++)
 				lookupTable.get(i).incrementTimeAlive(); 
-			}
 			time++;
 		} // end while loop
 		System.out.println("Simulation ended.");
@@ -191,6 +185,3 @@ public class VariableSizePartitioning extends Memory{
 		
 	}
 }
-/*
- * TODO: Best/Worst fit aren't working properly
- */
