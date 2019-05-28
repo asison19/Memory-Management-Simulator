@@ -12,30 +12,11 @@ import java.util.function.Predicate;
 
 public class Segmentation extends Memory{ 
 	
-	private int fitAlgorithm;
+	
 	public Segmentation(int memorySize, int processAmount, int fitAlgorithm) {
-		super(memorySize, processAmount);
-		this.fitAlgorithm = fitAlgorithm;
+		super(memorySize, processAmount, fitAlgorithm);
 	}
 
-	// add the process into the waiting processes list
-	// this method is called from main
-	@Override
-	public void addProcess(Process proc) {
-		waitingProcesses.add(proc);
-		
-		/*
-		 * if all the processes have been added to the waiting list
-		 * it's time to attempt to add them to memory at their start time
-		 * if they can't get in, they need to wait still
-		 */
-		
-		// once we add the last process, start the simulation
-		if(processAmount == proc.getId()) {
-			System.out.println("Starting Simulation.");
-			startSimulation();
-		}
-	}
 	
 	/*
 	 * Searches from the beginning of memory to the end for any available spots
@@ -99,7 +80,8 @@ public class Segmentation extends Memory{
 			Collections.reverse(holes); // sort in descending order of the totalSize
 	}
 	
-	private void startSimulation() {
+	@Override
+	protected void startSimulation() {
 		int time = 0;
 		Predicate<Process> condition = proc -> proc.isComplete(); // condition for when to remove processes from lookupTable
 		
@@ -178,14 +160,13 @@ public class Segmentation extends Memory{
 	}
 
 	@Override
-	public void outputProcesses() {
+	protected void outputProcesses() {
 		for(Process proc: lookupTable) {
 			for(int i = 0;i < proc.getSegmentAmount(); i++) {
 				System.out.println("\t" + proc.getSegmentAt(i).startIndex + "-"
 			+ proc.getSegmentAt(i).endIndex + ": Process " + proc.getId() + ", Segment "+ proc.getSegmentAt(i).id + ".");
 			}
 		}
-		
 	}
 	
 	/*

@@ -27,11 +27,13 @@ public abstract class Memory {
 	
 	protected int processAmount;
 	protected int finishedProcessAmount;
+	protected int fitAlgorithm;
 	
 	
-	public Memory(int memorySize, int processAmount){
+	public Memory(int memorySize, int processAmount, int fitAlgorithm){
 		memory = new boolean[memorySize];
 		this.processAmount = processAmount;
+		this.fitAlgorithm = fitAlgorithm;
 		
 		findHoles();
 	}
@@ -120,8 +122,23 @@ public abstract class Memory {
 	}
 	
 	// add the process into the waiting list and start the simulation once all processes are added
-	public abstract void addProcess(Process proc);
+	public void addProcess(Process proc) {
+		waitingProcesses.add(proc);
+		
+		/*
+		 * if all the processes have been added to the waiting list
+		 * it's time to attempt to add them to memory at their start time
+		 * if they can't get in, they need to wait still
+		 */
+		
+		// once we add the last process, start the simulation
+		if(processAmount == proc.getId()) {
+			System.out.println("Starting Simulation.");
+			startSimulation();
+		}
+	}
 	// output the processes that are currently running
-	public abstract void outputProcesses(); 
+	protected abstract void outputProcesses(); 
+	protected abstract void startSimulation();
 	
 }
