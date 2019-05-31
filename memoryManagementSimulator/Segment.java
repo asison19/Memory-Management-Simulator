@@ -11,6 +11,7 @@ public class Segment{
 	public int startIndex = -1; // -1 meaning it has not been set yet
 	public int endIndex = -1;
 	public int spaceAmount;
+	public int pageId = -1; // the page ID which this is associated to.
 	
 	public void resetIndexes() {
 		startIndex = -1;

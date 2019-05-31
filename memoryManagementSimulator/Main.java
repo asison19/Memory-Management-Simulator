@@ -32,8 +32,9 @@ public class Main {
 		memoryManagementPolicy = in.nextInt();
 		
 		if(memoryManagementPolicy == 2) {
-			System.out.println("Page Size: ");
-			pageSize = in.nextInt();
+			System.out.print("Page Size: ");
+			while(!getPageSize(in))
+				System.out.print("Page Size not viable. \nPage Size:");
 		} else {
 			System.out.print("Fit algorithm (1- first-fit, 2- best-fit, 3- worst-fit): ");
 			fitAlgorithm = in.nextInt();
@@ -42,6 +43,14 @@ public class Main {
 		System.out.print("File name of the Input: ");
 		fileName = in.next();
 		
+	}
+	
+	public static boolean getPageSize(Scanner in) {
+		pageSize = in.nextInt();
+		if(memorySize % pageSize == 0)
+			return true;
+		else 
+			return false;
 	}
 	
 	public static void memoryManagement() throws FileNotFoundException {
@@ -80,7 +89,7 @@ public class Main {
 			int id = in.nextInt();
 			int arrivalTime = in.nextInt();
 			int endTime = in.nextInt();
-			int pageAmount = in.nextInt(); // this should be greater than 1
+			int pageAmount = in.nextInt(); // this should be 1 or greater than 1
 			int[] spaceAmount = new int[pageAmount];
 			for(int j = 0; j < pageAmount; j++) {
 				spaceAmount[j] = in.nextInt();

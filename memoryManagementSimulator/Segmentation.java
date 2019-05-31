@@ -30,7 +30,7 @@ public class Segmentation extends Memory{
 		for(Segment segment: proc.getSegments()) {
 			// if one segment can't fit, the entire process won't be added, so return false, and reset the holes
 			// continue otherwise
-			if (!(fitHelper(proc, segment, freeHoles)))
+			if (!(fitHelper(segment, freeHoles)))
 				return false;
 		}
 		
@@ -43,11 +43,10 @@ public class Segmentation extends Memory{
 		// if we get here, all segments have been added and so the process has been added
 		return true;
 	}
-	private boolean fitHelper(Process proc, Segment segment, IndexSet[] freeHoles) {
+	private boolean fitHelper(Segment segment, IndexSet[] freeHoles) {
 		for(Hole hole: holes) {
 			// if the hole is bigger than the space needed, then set it to be added
 			if(hole.getTotalSize() >= segment.spaceAmount) { 
-				//segment.setIndexes(hole.getStartIndex(), hole.getStartIndex() + segment.spaceAmount);
 				freeHoles[segment.id - 1] = new IndexSet(hole.getStartIndex(), 
 						hole.getStartIndex() + segment.spaceAmount - 1);
 				// if the hole is the same size, remove the hole
@@ -147,7 +146,6 @@ public class Segmentation extends Memory{
 		} // end while loop
 		System.out.println("Simulation ended.");
 	}
-	
 	
 	/*
 	 * Start the process at time, time by adding it to the running processes list.

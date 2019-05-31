@@ -116,13 +116,12 @@ public abstract class Memory {
 					holes.add(new Hole(start, i - 1));
 					//System.out.println("\t" + start + "-" + i + ": Hole.");
 				}
-				
 			}
 		}
 	}
 	
 	// add the process into the waiting list and start the simulation once all processes are added
-	public void addProcess(Process proc) {
+	protected void addProcess(Process proc) {
 		waitingProcesses.add(proc);
 		
 		/*
