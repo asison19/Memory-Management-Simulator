@@ -6,19 +6,24 @@ import java.util.function.Predicate;
 public class Paging extends Memory{
 	
 	private int pageSize;
-	private ArrayList<Process> incompleteProcesses; // processes whose page sizes are too large to fit 
+	private ArrayList<Process> incompleteProcesses = new ArrayList<>(); // processes whose page sizes are too large to fit 
 	private Page[] pages;
 	
 	public Paging(int memorySize, int processAmount, int pageSize) {
-		super(memorySize, processAmount, -1); // for paging, we don't have a fitAlgorithm
+		super(memorySize, processAmount, -1); // for paging, we fit wherever possible
 		this.pageSize = pageSize;
 		createPages();
 	}
 	
 	private void createPages() {
-		int pageId = 1;
+		int pageId = 0;
+		int pageAmount = 0;
+		// count the number of needed pages
+		for(int i = 0; i < memory.length; i += pageSize)
+			pageAmount++;
+		pages = new Page[pageAmount];
 		for(int i = 0; i < memory.length; i += pageSize) {
-			pages[pageId - 1] = new Page(pageId, pageSize, i, i + pageSize);
+			pages[pageId] = new Page(pageId, pageSize, i);
 			pageId++;
 		}
 	}
@@ -26,6 +31,9 @@ public class Paging extends Memory{
 	private boolean fitAlgorithm(Process proc) {
 		// keep track of which pages will be used to fit the process
 		int[] pageIds = new int[proc.getSegmentAmount()];
+		// set all IDs as -1, as in they haven't been set yet.
+		for(int i = 0; i < pageIds.length; i ++)
+			pageIds[i] = -1;
 		
 		// for all the segments, see if they can all fit
 		for(Segment segment: proc.getSegments()) {
@@ -40,8 +48,8 @@ public class Paging extends Memory{
 		for(int i = 0 ; i < proc.getSegmentAmount(); i++) {
 			proc.setIndexesOfSegmentAt(i, pages[pageIds[i]].startIndex, pages[pageIds[i]].endIndex);
 			proc.getSegmentAt(i).pageId = pageIds[i];
-			pages[pageIds[i]].occupy(proc.getId(), proc.getSegmentAt(i).id);
-			addData(pages[pageIds[i]].startIndex, pages[pageIds[i]].endIndex);
+			pages[pageIds[i]].occupy(proc.getId(), proc.getSegmentAt(i).id, proc.getSegmentAt(i).spaceAmount);
+			//addData(pages[pageIds[i]].startIndex, pages[pageIds[i]].endIndex);
 		}	
 		
 		// if we get here, all segments have been added and so the process has been added
@@ -50,11 +58,19 @@ public class Paging extends Memory{
 	
 	private boolean fitHelper(Segment segment, int[] pageIds) {
 		for(Page page: pages) {
-			if(!page.occupied) {
+			if(!page.occupied && !alreadyChecked(page.id, pageIds)) {
 				pageIds[segment.id - 1] = page.id;
 				return true;
 			}
 		}
+		return false;
+	}
+	
+	private boolean alreadyChecked(int id, int[] ids) {
+		for(int i: ids)
+			if(i == id)
+				return true;
+		
 		return false;
 	}
 
@@ -115,6 +131,14 @@ public class Paging extends Memory{
 				lookupTable.get(i).incrementTimeAlive(); 
 			time++;
 		} // end while loop
+		System.out.println("The following processes couldn't be run because one or more of their segments are too large to fit.");
+		for(Process proc: incompleteProcesses) {
+			System.out.print("Process: " + proc.getId() + " Segment Sizes: ");
+			for(Segment segment: proc.getSegments())
+				System.out.print(segment.spaceAmount + " ");
+			System.out.println();
+		}
+		
 		System.out.println("Simulation ended.");
 		
 		//TODO check for any processes who couldn't run because page size too small
@@ -131,15 +155,30 @@ public class Paging extends Memory{
 	}
 	
 	@Override
-	protected void outputProcesses() {
-		// TODO make specific for paging
+	protected void outputMemoryMap() {
+		System.out.println("Memory Map:");
+		
 		// output the processes that are currently running
-		for(Process proc: lookupTable) {
-			for(int i = 0;i < proc.getSegmentAmount(); i++) {
-				System.out.println("\t" + proc.getSegmentAt(i).startIndex + "-"
-			+ proc.getSegmentAt(i).endIndex + ": Process " + proc.getId() +".");
+		outputProcesses();
+		
+		System.out.println();
+	}
+	
+	@Override
+	protected void outputProcesses() {
+		int totalInternalFragmentation = 0;
+		
+		// output the processes that are currently running
+		for(Page page: pages) {
+			System.out.print("\t " + page.startIndex + "-" + page.endIndex + " Page Number: " + page.id);
+			if(page.occupied) {
+				System.out.print(", Process: " + page.processId + ", Segment: " + page.segmentId + ".");
+				totalInternalFragmentation += page.outputFragmentation();
 			}
+			else
+				System.out.println(", Free.");
 		}
+		System.out.println("Total internal fragmentation: " + totalInternalFragmentation + ".");
 	}
 	
 	@Override
@@ -177,20 +216,22 @@ public class Paging extends Memory{
 		int processId = -1; 
 		int segmentId = -1;
 		int segmentSpaceAmount = -1;
-		boolean occupied; // if true, this page already has a process' segment attached to it.
+		boolean occupied = false; // if true, this page already has a process' segment attached to it.
 		
-		public Page(int id, int size, int startIndex, int endIndex) {
+		public Page(int id, int size, int startIndex) {
 			this.id = id;
 			this.size = size;
 			this.startIndex = startIndex;
-			this.endIndex = endIndex;
+			this.endIndex = startIndex + size - 1;
 			occupied = false;
 		}
 		
-		public void occupy(int processId, int segmentId) {
+		public void occupy(int processId, int segmentId, int segmentSpaceAmount) {
 			occupied = true;
 			this.processId = processId;
 			this.segmentId = segmentId;
+			this.segmentSpaceAmount = segmentSpaceAmount;
+			addData(startIndex, endIndex);
 			
 			internalFragmentation = size - segmentSpaceAmount;
 		}
@@ -200,6 +241,17 @@ public class Paging extends Memory{
 			this.processId = -1;
 			this.segmentId = -1;
 			internalFragmentation = -1;
+			
+			removeData(startIndex, endIndex);
+		}
+		
+		public int outputFragmentation() {
+			if(internalFragmentation > 0)
+				System.out.println(" Internal Fragmentation At Indexes: " + (startIndex + segmentSpaceAmount) + "-" + endIndex 
+						+ " of size: " + internalFragmentation + ".");
+			else
+				System.out.println();
+			return internalFragmentation;
 		}
 	}
 	

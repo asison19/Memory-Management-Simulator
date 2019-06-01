@@ -76,7 +76,7 @@ public abstract class Memory {
 	
 	
 	// TODO redo? Make it so that it goes by order of the memory bits and not process number.
-	public void outputMemoryMap() {
+	protected void outputMemoryMap() {
 		System.out.println("Memory Map:");
 		
 		// output the processes that are currently running
@@ -93,12 +93,8 @@ public abstract class Memory {
 		System.out.println();
 	}
 	
-	public int getProcessAmount() {
+	protected int getProcessAmount() {
 		return processAmount;
-	}
-	
-	public void removeHole(Hole hole) {
-		
 	}
 	
 	protected void findHoles() {
